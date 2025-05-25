@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Flaskresponse } from './interfaces/FlaskInterface';
+import { Flaskresponse } from './shared/interfaces/FlaskInterface';
 
 const app = new Hono()
 
