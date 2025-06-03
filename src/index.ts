@@ -1,9 +1,11 @@
 import { Hono } from 'hono';
-import { Flaskresponse } from '../../shared/interfaces/FlaskInterface';
+import { Flaskresponse } from './shared/interfaces/FlaskInterface';
 
 const app = new Hono()
 
-app.get('/', (c) => { return c.text('New API Gateway in process!!!!!!!!') })
+function init(params:String) {
+  return app.get('/', (c) => { return c.text(`New ${params} Gateway in process!!!!!!!!`) })
+}
 /**
  * ? Trabajar con webworkers para la ejecucion de los endpoints de forma que logren ser asincronos y reducir la latencia
  * ? entre peticiones del usuario
@@ -14,6 +16,6 @@ app.get('/pythonApi', async (c) => {
   return c.json(data.message);
 })
 
-
+init("api")
 
 export default app
