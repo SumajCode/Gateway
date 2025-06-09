@@ -1,21 +1,24 @@
 import { Hono } from 'hono';
-import { Flaskresponse } from './shared/interfaces/FlaskInterface';
+import { SmartRouter } from 'hono/router/smart-router';
+import { RegExpRouter } from 'hono/router/reg-exp-router';
+import { TrieRouter } from 'hono/router/trie-router';
+import mainDocente from './infra/routes/DocenteRoutes/RouteMainDocente';
 
-const app = new Hono()
+const app = new Hono({
+    router: new SmartRouter({
+        routers: [
+            new RegExpRouter(),
+            new TrieRouter()
+        ]
+    })
+});
 
-function init(params:String) {
-  return app.get('/', (c) => { return c.text(`New ${params} Gateway in process!!!!!!!!`) })
-}
+app.get('/', (c) => { return c.text(`New Gateway in process!!!!!!!!`) });
+
 /**
  * ? Trabajar con webworkers para la ejecucion de los endpoints de forma que logren ser asincronos y reducir la latencia
  * ? entre peticiones del usuario
  */
-app.get('/pythonApi', async (c) => { 
-  const response = await fetch('http://127.0.0.1:5000/');
-  const data = (await response.json()) as Flaskresponse;
-  return c.json(data.message);
-})
-
-init("api")
+app.route('/gateway', mainDocente)
 
 export default app
