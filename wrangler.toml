@@ -1,0 +1,14 @@
+name = "hono"
+compatibility_date = "2025-04-15"
+main = "src/index.ts"
+
+APP_NAME = "Integrador del todo"
+APP_VERSION = "1.1.0"
+HOST = "http//:127.0.0.1"
+PORT = 3000
+
+[vars]
+URL_API_DOCENTE = "https://raulpsl.pythonanywhere.com"
+URL_API_COMPILADOR = "https://microservicecompilador.onrender.com"
+URL_API_CONTENIDO = "https://microservice-content.onrender.com"
+URL_API_ESTUDIANTE = "https://microservice-estudiante.onrender.com"
