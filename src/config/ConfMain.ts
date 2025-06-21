@@ -1,10 +1,12 @@
-import { Config } from "../shared/interfaces/ConfigInterface";
-import { CompiladorEnvs } from "./ConfCompilador";
-import { DocenteEnvs } from "./ConfDocente";
+import { z } from 'zod';
 
-const env = process.env;
+const esquemaEntorno = z.object({
+    URL_API_DOCENTE:z.string(),
+    URL_API_COMPILADOR: z.string(),
+    URL_API_CONTENIDO: z.string(),
+    URL_API_ESTUDIANTE: z.string(),
+});
 
-export const config: Config = {
-    docente: DocenteEnvs(env),
-    compilador: CompiladorEnvs(env)
-};
+export type Configuracion = z.infer<typeof esquemaEntorno>;
+
+export const ConfiguracionEnvs = (env: Record<string, unknown>): Configuracion => esquemaEntorno.parse(env)
