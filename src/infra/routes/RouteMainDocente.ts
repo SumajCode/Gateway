@@ -22,4 +22,4 @@ const rutasDocente: RutaProxy[] = [
     { method: 'get', route: '/', destiny: '/'}
 ]
 
-export const rutasApiDocente = (route: string) => generarRutasProxy('/v1', route, rutasDocente);
+export const rutasApiDocente = (route: string) => generarRutasProxy('/apidocentes/v1', route, rutasDocente);

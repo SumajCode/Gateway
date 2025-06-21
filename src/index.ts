@@ -1,8 +1,9 @@
 import { Hono } from 'hono';
-import { env } from 'hono/adapter';
 import { ConfiguracionEnvs } from './config/ConfMain';
 import { rutasApiCompilador } from './infra/routes/RoutesCompilador';
 import { rutasApiDocente } from './infra/routes/RouteMainDocente';
+import { rutasApiEstudainte } from './infra/routes/RoutesEstudiante';
+import { rutasApiContenido } from './infra/routes/RoutesContenido';
 
 interface Bindings {
   URL_API_DOCENTE: string;
@@ -17,39 +18,44 @@ type Variables = {
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-app.use('*', async (c, sig) => {
-    try{
-        const entorno = ConfiguracionEnvs(c.env as unknown as Record<string, unknown>);
-        c.set('config', entorno);
-    }catch (error) {
-        console.log("ENV: ", c.env)
-        console.log(error)
-        return c.text('Error de configuración de entorno', 500);
-    }
-    await sig();
-})
+// Middleware para guardar el config en cada request
+app.use('*', async (c, next) => {
+  const config = ConfiguracionEnvs(c.env as unknown as Record<string, unknown>);
+  c.set('config', config);
+  await next();
+});
 
+// 🟢 ✅ Montar rutas desde config usando datos por defecto
+// Ya que `c.env` no existe aquí todavía, usamos valores por defecto que serán los mismos en `wrangler.toml`
+const staticEnv = {
+  URL_API_DOCENTE: 'https://raulpsl.pythonanywhere.com',
+  URL_API_COMPILADOR: 'https://microservicecompilador.onrender.com',
+  URL_API_CONTENIDO: 'https://microservice-content.onrender.com',
+  URL_API_ESTUDIANTE: 'https://microservice-estudiante.onrender.com',
+};
+
+// Usa config preprocesado (idéntico al del runtime en Workers)
+const staticConfig = ConfiguracionEnvs(staticEnv);
+
+// Monta todas las rutas de proxy
+app.route('', rutasApiDocente(staticConfig.URL_API_DOCENTE));
+app.route('', rutasApiEstudainte(staticConfig.URL_API_ESTUDIANTE));
+app.route('', rutasApiContenido(staticConfig.URL_API_CONTENIDO));
+app.route('', rutasApiCompilador(staticConfig.URL_API_COMPILADOR));
+
+// Ruta base
 app.get('/', (c) => {
-    const config = c.get('config');
-    return c.json({
-        mensaje: '¡Bienvenido al API Gateway!',
-        apis: {
-            docente: config.URL_API_DOCENTE,
-            compilador: config.URL_API_COMPILADOR,
-            estudiante: config.URL_API_ESTUDIANTE,
-            contenidio: config.URL_API_CONTENIDO,
-        },
-    });
-})
-
-app.all('/apidocente', (c) => {
-    const config = c.get('config');
-    return rutasApiDocente(config.URL_API_DOCENTE).fetch(c.req.raw, env(c))
+  const config = c.get('config');
+  return c.json({
+    mensaje: '¡Bienvenido al API Gateway!',
+    apis: {
+      docente: config.URL_API_DOCENTE,
+      compilador: config.URL_API_COMPILADOR,
+      estudiante: config.URL_API_ESTUDIANTE,
+      contenido: config.URL_API_CONTENIDO,
+    },
+    rutas: app.routes
+  });
 });
 
-app.all('/apicompilador', (c) => {
-    const config = c.get('config');
-    return rutasApiCompilador(config.URL_API_COMPILADOR).fetch(c.req.raw, env(c))
-});
-
-export default app
+export default app;
