@@ -7,7 +7,7 @@
     "nodejs_compat"
   ],
   "vars": {
-    "URL_API_DOCENTE": "https://raulpsl.pythonanywhere.com",
+    "URL_API_DOCENTE": "https://microservice-docente.onrender.com",
     "URL_API_COMPILADOR": "https://microservicecompilador.onrender.com",
     "URL_API_CONTENIDO": "https://microservice-content.onrender.com",
     "URL_API_ESTUDIANTE": "https://microservice-estudiante.onrender.com"

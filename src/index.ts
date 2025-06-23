@@ -25,25 +25,20 @@ app.use('*', async (c, next) => {
   await next();
 });
 
-// 🟢 ✅ Montar rutas desde config usando datos por defecto
-// Ya que `c.env` no existe aquí todavía, usamos valores por defecto que serán los mismos en `wrangler.toml`
 const staticEnv = {
-  URL_API_DOCENTE: 'https://raulpsl.pythonanywhere.com',
+  URL_API_DOCENTE: 'https://microservice-docente.onrender.com',
   URL_API_COMPILADOR: 'https://microservicecompilador.onrender.com',
   URL_API_CONTENIDO: 'https://microservice-content.onrender.com',
   URL_API_ESTUDIANTE: 'https://microservice-estudiante.onrender.com',
 };
 
-// Usa config preprocesado (idéntico al del runtime en Workers)
 const staticConfig = ConfiguracionEnvs(staticEnv);
 
-// Monta todas las rutas de proxy
 app.route('', rutasApiDocente(staticConfig.URL_API_DOCENTE));
 app.route('', rutasApiEstudainte(staticConfig.URL_API_ESTUDIANTE));
 app.route('', rutasApiContenido(staticConfig.URL_API_CONTENIDO));
 app.route('', rutasApiCompilador(staticConfig.URL_API_COMPILADOR));
 
-// Ruta base
 app.get('/', (c) => {
   const config = c.get('config');
   return c.json({

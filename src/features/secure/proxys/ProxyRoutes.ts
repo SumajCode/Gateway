@@ -24,7 +24,6 @@ export const generarRutasProxy = (basePath: string, routeMain: string, routes: R
             const data = (await response.json()) as Flaskresponse;
             return c.json(data.data);
         });
-        console.log('→ Redirigiendo a:', `${routeMain}${basePath}${destiny}`);
     }
 
     return proxy;
